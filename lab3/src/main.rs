@@ -13,8 +13,19 @@ fn main() {
         return;
     }
 
-    let encoded = encode_hamming(&input);
-    println!("Encoded string: {}", encoded);
+    let encoded_string = encode_hamming(&input);
+    println!("Encoded string: {}", encoded_string);
+
+    let (decoded_string, error_pos) = decode_hamming(&encoded_string);
+
+    println!("Decoded string: {}", decoded_string);
+    match error_pos {
+        Some(pos) => println!(
+            "A single-bit error was detected and corrected at position: {}",
+            pos
+        ),
+        None => println!("No errors were detected."),
+    }
 }
 
 fn encode_hamming(data: &str) -> String {
@@ -59,4 +70,56 @@ fn encode_hamming(data: &str) -> String {
     }
 
     encoded.into_iter().collect()
+}
+
+fn decode_hamming(encoded: &str) -> (String, Option<usize>) {
+    let mut error_pos = 0;
+    let encoded_len = encoded.len();
+    let mut parity_positions = Vec::new();
+    let mut parity_checks = Vec::new();
+
+    // Determine parity bit positions
+    let mut i = 0;
+    while (1 << i) <= encoded_len {
+        parity_positions.push(1 << i);
+        parity_checks.push(0); // Initialize parity checks
+        i += 1;
+    }
+
+    // Calculate parity checks
+    for (index, &parity_pos) in parity_positions.iter().enumerate() {
+        let mut parity = 0;
+        let mut k = parity_pos;
+        while k <= encoded_len {
+            for l in k..std::cmp::min(k + parity_pos, encoded_len + 1) {
+                parity ^= encoded.chars().nth(l - 1).unwrap() as u8 - b'0';
+            }
+            k += 2 * parity_pos;
+        }
+        parity_checks[index] = parity;
+
+        if parity == 1 {
+            error_pos += parity_pos; // Accumulate error position
+        }
+    }
+
+    // Correct the single-bit error if exists
+    let mut corrected_encoded: Vec<char> = encoded.chars().collect();
+    if error_pos > 0 {
+        corrected_encoded[error_pos - 1] = if corrected_encoded[error_pos - 1] == '0' {
+            '1'
+        } else {
+            '0'
+        };
+    }
+
+    // Remove parity bits to extract original data
+    let mut data = String::new();
+    for j in 1..=encoded_len {
+        if !parity_positions.contains(&j) {
+            data.push(corrected_encoded[j - 1]);
+        }
+    }
+
+    (data, if error_pos > 0 { Some(error_pos) } else { None })
 }
