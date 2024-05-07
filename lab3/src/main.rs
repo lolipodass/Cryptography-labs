@@ -6,7 +6,7 @@ fn main() {
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
-    let input = input.trim().replace(" ", ""); // Remove spaces if any
+    let input = input.trim().replace(" ", "");
 
     if !input.chars().all(|c| c == '0' || c == '1') {
         println!("Please enter a valid binary string.");
@@ -14,7 +14,21 @@ fn main() {
     }
 
     let encoded_string = encode_hamming(&input);
-    println!("Encoded string: {}", encoded_string);
+    println!("Encoded string without error: {}", encoded_string);
+
+    let error_position = 5;
+    let _encoded_string_with_error = flip_bit(&encoded_string, error_position);
+    // println!(
+    //     "Encoded string with error:    {}",
+    //     encoded_string_with_error
+    // );
+
+    // let error_position = 4;
+    // let encoded_string_with_error2 = flip_bit(&encoded_string_with_error, error_position);
+    // println!(
+    //     "Encoded string with 2 error:  {}",
+    //     encoded_string_with_error2
+    // );
 
     let (decoded_string, error_pos) = decode_hamming(&encoded_string);
 
@@ -28,12 +42,24 @@ fn main() {
     }
 }
 
+fn flip_bit(encoded: &str, position: usize) -> String {
+    let mut encoded_chars: Vec<char> = encoded.chars().collect();
+    let adjusted_position = position - 1;
+    if adjusted_position < encoded_chars.len() {
+        encoded_chars[adjusted_position] = if encoded_chars[adjusted_position] == '0' {
+            '1'
+        } else {
+            '0'
+        };
+    }
+    encoded_chars.into_iter().collect()
+}
+
 fn encode_hamming(data: &str) -> String {
     let data_len = data.len();
     let mut total_len = data_len;
     let mut parity_positions = Vec::new();
 
-    // Calculate total length including parity bits
     let mut i = 0;
     while (1 << i) <= total_len {
         parity_positions.push(1 << i);
