@@ -3,7 +3,7 @@ use std::io::{self, Write};
 //Циклический код
 fn main() {
     let max_size_bits = 11;
-    let generator: Vec<u8> = vec![1, 0, 0, 1, 1];
+    let generator: Vec<u8> = vec![1, 0, 0, 1, 1];//x^4+x+1;
 
     let parity_check_matrix = build_parity_check_matrix(&generator);
 

@@ -7,7 +7,7 @@ mod iterative_code;
 fn main() {
     let columns = 4;
     let information_length = 4;
-    let code_length = 2 * 8;
+    let code_length = 4 * 8;
 
     let mut message = generate_string(information_length, code_length);
 
@@ -22,7 +22,7 @@ fn main() {
     println!("interleave {}", vec_bool_to_string(&inter));
 
     // Simulate packet error
-    let error_rate = 0.1; // 10% error rate
+    let error_rate = 0.5; // 10% error rate
     let error_packet = generate_random_error(&inter, error_rate);
     println!("Packet with error: {}", vec_bool_to_string(&error_packet));
 
