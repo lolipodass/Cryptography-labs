@@ -34,6 +34,5 @@ pub fn huffman_encoding(frequency_list: &Vec<(char, usize)>) -> HashMap<char, St
         freq_list.push((combined, combined_freq));
     }
 
-    println!("huffman {:?}", freq_map);
     freq_map
 }

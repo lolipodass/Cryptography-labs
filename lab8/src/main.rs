@@ -28,13 +28,25 @@ fn main() {
 
     let frequency_map = count_symbol_frequency(input);
 
+    println!("Frequency map");
+    for (key, value) in &frequency_map {
+        println!("{}: {}", key, value);
+    }
     let encoding_shannon_map = shannon_fano_encode(&frequency_map);
 
-    println!("Encoding map shannon : {:?}", encoding_shannon_map);
+    //print in rows
+
+    println!("Encoding map shannon");
+    for (key, value) in &encoding_shannon_map {
+        println!("{}: {}", key, value);
+    }
 
     let encoding_huffman_map = huffman_encoding(&frequency_map);
 
-    println!("Encoding map huffman: {:?}", encoding_huffman_map);
+    println!("Encoding map huffman");
+    for (key, value) in &encoding_huffman_map {
+        println!("{}: {}", key, value);
+    }
 
     let mut input_binary = String::new();
     for character in input.to_string().clone().into_bytes() {
