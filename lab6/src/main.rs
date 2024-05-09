@@ -5,13 +5,13 @@ use crate::iterative_code::IterativeCode;
 mod iterative_code;
 
 fn main() {
-    let columns = 4;
+    let columns = 8;
     let information_length = 4;
-    let code_length = 4 * 8;
+    let code_length = 6 * 8;
 
     let mut message = generate_string(information_length, code_length);
 
-    println!("Generated message {}", vec_bool_to_string(&message));
+    println!("Generated message\t\t{}", vec_bool_to_string(&message));
 
     while message.len() < code_length {
         message.push(false);
@@ -19,19 +19,27 @@ fn main() {
 
     let inter = interleave(&message, code_length / columns, columns);
 
-    println!("interleave {}", vec_bool_to_string(&inter));
+    println!("interleave\t\t\t{}", vec_bool_to_string(&inter));
 
-    // Simulate packet error
-    let error_rate = 0.5; // 10% error rate
-    let error_packet = generate_random_error(&inter, error_rate);
-    println!("Packet with error: {}", vec_bool_to_string(&error_packet));
+    // Simulate random error
+    // let error_rate = 0.1; // 10% error rate
+    // let error_packet = generate_random_error(&inter, error_rate);
+    // println!("packet with random error: {}", vec_bool_to_string(&error_packet));
+
+    //simulate packet error
+    let error_pos = rand::thread_rng().gen_range(0..code_length);
+    let error_size = 5;
+    let error_packet = packet_error(&inter, error_pos, error_size);
+
+    println!("packet with error:\t\t{}", vec_bool_to_string(&error_packet));
+    println!("packet with error at pos {} size {}", error_pos, error_size);
 
     let deinter = deinterleave(&error_packet, code_length / columns, columns);
-    println!("deinterleave {}", vec_bool_to_string(&deinter));
+    println!("deinterleave\t\t\t{}", vec_bool_to_string(&deinter));
 
     let initial_message = decode_deinterleaved_data(&deinter, information_length);
 
-    // println!("initial message {}", vec_bool_to_string(&initial_message));
+    println!("initial message\t\t\t{}", vec_bool_to_string(&initial_message));
 }
 
 fn decode_deinterleaved_data(deinterleaved_data: &[bool], inf_size: usize) -> Vec<bool> {
@@ -143,5 +151,17 @@ fn generate_random_error(packet: &Vec<bool>, error_rate: f64) -> Vec<bool> {
         }
     }
 
+    error_packet
+}
+
+fn packet_error(packet: &Vec<bool>, pos: usize, size: usize) -> Vec<bool> {
+    let mut error_packet = Vec::new();
+    for i in 0..packet.len() {
+        if i >= pos && i < pos + size {
+            error_packet.push(!packet[i]);
+        } else {
+            error_packet.push(packet[i]);
+        }
+    }
     error_packet
 }
