@@ -5,33 +5,64 @@ use crate::iterative_code::IterativeCode;
 mod iterative_code;
 
 fn main() {
-    let columns = 4;
-    let information_length = 4;
-    let code_length = 4 * 8;
+    let mut code = IterativeCode::new_empty(6, 4);
 
-    let mut message = generate_string(information_length, code_length);
+    let data = vec![1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1];
+    let bool_data: Vec<bool> = data
+        .into_iter()
+        .map(|x| x == 1)
+        .collect();
+    let mut encode = code.encode(bool_data);
 
-    println!("Generated message {}", vec_bool_to_string(&message));
+    print!("encoded word \t{}", vec_bool_to_string(&encode));
 
-    while message.len() < code_length {
-        message.push(false);
+    let bit = rand::thread_rng().gen_range(0..encode.len());
+    encode[bit] ^= true;
+    print!("\nerror word \t{}", vec_bool_to_string(&encode));
+
+    print!("\nerror bit {}\t", bit);
+    println!("{:>bit$}^", "");
+
+    match code.decode(encode) {
+        Ok(decoded) => {
+            print!("\ndecoded word ");
+
+            for elem in &decoded {
+                print!("{}", *elem as i32);
+            }
+        }
+        Err(err) => {
+            println!("Decoding error: {:?}", err);
+        }
     }
 
-    let inter = interleave(&message, code_length / columns, columns);
+    // let columns = 4;
+    // let information_length = 4;
+    // let code_length = 4 * 8;
 
-    println!("interleave {}", vec_bool_to_string(&inter));
+    // let mut message = generate_string(information_length, code_length);
 
-    // Simulate packet error
-    let error_rate = 0.5; // 10% error rate
-    let error_packet = generate_random_error(&inter, error_rate);
-    println!("Packet with error: {}", vec_bool_to_string(&error_packet));
+    // println!("Generated message {}", vec_bool_to_string(&message));
 
-    let deinter = deinterleave(&error_packet, code_length / columns, columns);
-    println!("deinterleave {}", vec_bool_to_string(&deinter));
+    // while message.len() < code_length {
+    //     message.push(false);
+    // }
 
-    let initial_message = decode_deinterleaved_data(&deinter, information_length);
+    // let inter = interleave(&message, code_length / columns, columns);
 
-    println!("initial message {}", vec_bool_to_string(&initial_message));
+    // println!("interleave {}", vec_bool_to_string(&inter));
+
+    // // Simulate packet error
+    // let error_rate = 0.5; // 10% error rate
+    // let error_packet = generate_random_error(&inter, error_rate);
+    // println!("Packet with error: {}", vec_bool_to_string(&error_packet));
+
+    // let deinter = deinterleave(&error_packet, code_length / columns, columns);
+    // println!("deinterleave {}", vec_bool_to_string(&deinter));
+
+    // let initial_message = decode_deinterleaved_data(&deinter, information_length);
+
+    // println!("initial message {}", vec_bool_to_string(&initial_message));
 }
 
 fn decode_deinterleaved_data(deinterleaved_data: &[bool], inf_size: usize) -> Vec<bool> {
@@ -66,7 +97,7 @@ fn generate_string(word_size: usize, code_len: usize) -> Vec<bool> {
     println!("rows {},cols {}", rows, cols);
     println!("code size {}", code.code_size);
 
-    for _word in 0..(code_len / code.code_size) {
+    for _word in 0..code_len / code.code_size {
         let data = generate_random_binary_(word_size);
         res_not_encoded.extend(data.clone());
         println!("word {}", vec_bool_to_string(&data));
@@ -76,10 +107,7 @@ fn generate_string(word_size: usize, code_len: usize) -> Vec<bool> {
         res.extend(encoded);
     }
 
-    println!(
-        "message not encoded {}",
-        vec_bool_to_string(&res_not_encoded)
-    );
+    println!("message not encoded {}", vec_bool_to_string(&res_not_encoded));
 
     res
 }
@@ -148,4 +176,3 @@ fn generate_random_error(packet: &Vec<bool>, error_rate: f64) -> Vec<bool> {
 
     error_packet
 }
-
