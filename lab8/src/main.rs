@@ -6,25 +6,25 @@ use std::{ char, collections::HashMap };
 use crate::{ huffman::huffman_encoding, shannon_fano::shannon_fano_encode };
 
 fn main() {
-    let input =
-        "0QKZ3vlk9hQ79iK426Qcr0wl2E927i8eu994V1Ku8Zl91A3Sfbr0Pxp
-        jJjNEyraRIESuxexUwwWaeEh0TV2f8IJwmLUfZEOpcto8M9WNVqS5YeV
-        DD0XfgprGLPyDZh0fckRF4wlGuxZmXYpOznrCYCxu6fYwoiZpWbVz5Zo
-        QT7c2siiK81C3bwba93u5WcC3ZTmzGcIXGmbTJf5y2I8KplnETFkQhPG
-        ifIaJc1CCY6aJahKxlR2EmKszKRhRxBsIDeQmr2ojEWNZ0QQ76J6xVuz
-        nfR4lnJepPYuo6CgEJT75kQdbkwCLduNSt3DshKdMG2xeitXPZsn4cUn
-        UMrCrGqHvQIZY4FAQs0eh1BWWHMfJ7BUgeCW5WnSeRDu5luZVuqQ98nN
-        upZfhV40UdqMKLMeCRJQa8MUdJmUV7XSeShrNs9AhoqLzBtMOTGYYdCQ
-        n4hOkqZQCRuzks9B7kpGHrRYOiQ59OzrsABsKKTLPHTFTrtcZxgHLxCr
-        uYUFkVwfhC8I8Y311lUAm14xfyc9VaKfrXkChhDPNUw0BMirHh8K8U86
-        k8mXtCdFdH5gUlXXBwmdKR45A4wdInOnIMx5wJ3XPpMl64cptP07IsZR
-        eHqiRWirajfFRMhVJJt2WArFQCDu7Wgn2IIeU3fB1vV9lvK6YixIX2eq
-        qgI3pzMXalOC0kSDc44Y0NqgfJCAQSAAOAZrsWRU16NgpUBBw68pHZgY
-        9CGAYWpU10iEqjTO9mLAyuxpEqGI2ETwdvv1hhdbpMLoMtU3LEfTnlm1
-        WwLg4JcdTd3ofkruXccetNj66Njq8eFqCv2DbIs90wLugyL0SbMxIY0J
-        HDjWHZgNhiyw20J9ZRahv8SGeJKRD7fFQnY9NFXxFDbcCKORbwxZhpcu
-        N7XysPdmBe8e7YkBVC0WBDgUkRGzDKUda3SXrdSzuN41djDovPRdUwXz";
-    // let input = "AAAAAAAAAAAAAAABBBBBBBGGGGGGDDDDDDLLLLL";
+    // let input =
+    //     "0QKZ3vlk9hQ79iK426Qcr0wl2E927i8eu994V1Ku8Zl91A3Sfbr0Pxp
+    //     jJjNEyraRIESuxexUwwWaeEh0TV2f8IJwmLUfZEOpcto8M9WNVqS5YeV
+    //     DD0XfgprGLPyDZh0fckRF4wlGuxZmXYpOznrCYCxu6fYwoiZpWbVz5Zo
+    //     QT7c2siiK81C3bwba93u5WcC3ZTmzGcIXGmbTJf5y2I8KplnETFkQhPG
+    //     ifIaJc1CCY6aJahKxlR2EmKszKRhRxBsIDeQmr2ojEWNZ0QQ76J6xVuz
+    //     nfR4lnJepPYuo6CgEJT75kQdbkwCLduNSt3DshKdMG2xeitXPZsn4cUn
+    //     UMrCrGqHvQIZY4FAQs0eh1BWWHMfJ7BUgeCW5WnSeRDu5luZVuqQ98nN
+    //     upZfhV40UdqMKLMeCRJQa8MUdJmUV7XSeShrNs9AhoqLzBtMOTGYYdCQ
+    //     n4hOkqZQCRuzks9B7kpGHrRYOiQ59OzrsABsKKTLPHTFTrtcZxgHLxCr
+    //     uYUFkVwfhC8I8Y311lUAm14xfyc9VaKfrXkChhDPNUw0BMirHh8K8U86
+    //     k8mXtCdFdH5gUlXXBwmdKR45A4wdInOnIMx5wJ3XPpMl64cptP07IsZR
+    //     eHqiRWirajfFRMhVJJt2WArFQCDu7Wgn2IIeU3fB1vV9lvK6YixIX2eq
+    //     qgI3pzMXalOC0kSDc44Y0NqgfJCAQSAAOAZrsWRU16NgpUBBw68pHZgY
+    //     9CGAYWpU10iEqjTO9mLAyuxpEqGI2ETwdvv1hhdbpMLoMtU3LEfTnlm1
+    //     WwLg4JcdTd3ofkruXccetNj66Njq8eFqCv2DbIs90wLugyL0SbMxIY0J
+    //     HDjWHZgNhiyw20J9ZRahv8SGeJKRD7fFQnY9NFXxFDbcCKORbwxZhpcu
+    //     N7XysPdmBe8e7YkBVC0WBDgUkRGzDKUda3SXrdSzuN41djDovPRdUwXz";
+    let input = "LAADADAGGGAAGBALBBLBALADADBABDAALDBAAGBG";
 
     let frequency_map = count_symbol_frequency(input);
 
@@ -53,15 +53,31 @@ fn main() {
         input_binary += &format!("0{:b} ", character);
     }
 
-    println!("Input binary: {}", input_binary);
-
     let coded_string_shannon = encode_string(input.to_string(), &encoding_shannon_map);
-
-    println!("Coded string shannon: {}", coded_string_shannon);
-
     let coded_string_huffman = encode_string(input.to_string(), &encoding_huffman_map);
 
+    println!("Input binary: {}", input_binary);
+    println!("Coded string shannon: {}", coded_string_shannon);
     println!("Coded string huffman: {}", coded_string_huffman);
+
+    //compare size of coded strings
+    println!("Size input untf8: {}", input_binary.len());
+    println!("Size shannon: {}", coded_string_shannon.len());
+    println!("Size huffman: {}", coded_string_huffman.len());
+
+    println!("Size shannon difference: {}", input_binary.len() - coded_string_shannon.len());
+    println!("Size huffman difference: {}", input_binary.len() - coded_string_huffman.len());
+
+    println!(
+        "Size shannon percentage: {}",
+        (((input_binary.len() - coded_string_shannon.len()) as f32) / (input_binary.len() as f32)) *
+            100.0
+    );
+    println!(
+        "Size huffman percentage: {}",
+        (((input_binary.len() - coded_string_huffman.len()) as f32) / (input_binary.len() as f32)) *
+            100.0
+    );
 
     let decoded_string_shannon = decode_string(coded_string_shannon, &encoding_shannon_map);
 
